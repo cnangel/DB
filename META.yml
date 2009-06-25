@@ -1,0 +1,27 @@
+---
+abstract: ~
+author:
+  - 'Cnangel <cnangel@126.com>'
+build_requires:
+  ExtUtils::MakeMaker: 6.42
+  Test::Base: 0.50
+configure_requires:
+  ExtUtils::MakeMaker: 6.42
+distribution_type: module
+generated_by: 'Module::Install version 0.82'
+license: bsd
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: DB
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  DBI: 1.6
+  Filter::Util::Call: 0
+  perl: 5.6.1
+resources:
+  license: http://opensource.org/licenses/bsd-license.php
+version: 0.004
