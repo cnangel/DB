@@ -1,0 +1,310 @@
+package DBQuery;
+
+# $Id: DBQuery.pm,v 1.0.0 2009/06/26 10:51:18 Cnangel Exp $
+
+use DBI;
+
+$DBQuery::VERSION = 0.002;
+
+sub new
+{
+	my $class = shift;
+	my $DB = shift;
+	my $self;
+	if (defined $DB->{dsn})
+	{
+		$self = {
+			'dsn' => $DB->{dsn},
+			'user' => $DB->{db_user},
+			'pass' => $DB->{db_pass},
+			'dbh' => undef,
+			'sth' => undef,
+		};
+	}
+	else
+	{
+		$DB->{driver_name} = 'mysql' unless (defined $DB->{driver_name});
+		$DB->{driver_name} = ucfirst($DB->{driver_name}) if ($DB->{driver_name} eq "oracle");
+#	$DB->{db_port} = 3306 unless (defined $DB->{db_port});
+#	$DB->{db_sock} = '/tmp/mysql.sock' unless (defined $DB->{db_sock});
+		$self = {
+			'dsn' => $DB->{driver_name} eq 'mysql'
+				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} . ';hostname=' . $DB->{db_host} . ';' . (defined $DB->{db_sock} ? 'mysql_socket=' . $DB->{db_sock} . ';' : 'mysql_socket=/tmp/mysql.sock;') . (defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=3306') 
+				: ($DB->{driver_name} eq 'pgsql' 
+						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . ';' . (defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') . (defined $DB->{db_path} ? 'path=' . $DB->{db_path} . ';' : '') . (defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=5432')
+						: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
+				  ),
+			'user' => $DB->{db_user},
+			'pass' => $DB->{db_pass},
+			'dbh' => undef,
+			'sth' => undef,
+		};
+	}
+	bless $self, $class;
+	return $self;
+}
+
+sub connect
+{
+	my $self = shift;
+	$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
+	return;
+}
+
+sub query
+{
+	my $self = shift;
+	$self->{sth} = $self->{dbh}->prepare($_[0]);
+	$self->{sth}->execute();
+	return $self->{sth};
+}
+
+sub quote
+{
+	my $self = shift;
+	return $self->{dbh}->quote($_[0]);
+}
+
+sub fetch_array
+{
+	my $self = shift;
+	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_array() : $self->{sth}->fetchrow_array();
+}
+
+sub fetch_hash
+{
+	my $self = shift;
+	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_hashref() : $self->{sth}->fetchrow_hashref();
+}
+
+sub close
+{
+	my $self = shift;
+	$self->{sth}->finish() if (defined $self->{sth});
+	$self->{dbh}->disconnect if (defined $self->{dbh});
+	return;
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+DBQuery - Lib of DB Query
+
+=head1 SYNOPSIS
+
+The following lib are provided:
+
+=over
+
+=item B<import>
+
+use DBQuery;
+
+=item B<Struct Init>
+
+Init mysql struct example:
+
+    my %DB = (
+		'db_host'	=> 'web10.search.cnb.yahoo.com',
+		'db_user'	=> 'yahoo',
+		'db_pass'	=> 'yahoo',
+		'db_name'	=> 'ADCode',
+		);
+    my $db = new DB(\%DB);
+
+or postgresql:
+
+    my %PQ = (
+		'driver_name'		=> 'PgPP',
+		'db_host'		=> 'tool2.search.cnb.yahoo.com',
+		'db_name'		=> 'cnedb',
+		'db_user'		=> 'cnedb',
+		'db_pass'		=> 'cnedb',
+		);
+    my $db = new DB(\%PQ);
+
+or oracle:
+
+    my %OC = (
+		'driver_name'		=> 'oracle',
+		'db_host'		=> 'ocndb',
+		'db_user'		=> 'alibaba',
+		'db_pass'		=> 'ocndb',
+		);
+    my $db = new DB(\%OC);
+
+over this, you can use dsn for init structure.
+
+    my %DB = (
+		'dsn'		=> 'dbi:mysql:database=testinter;host=localhost;mysql_socket=/var/lib/mysql/mysql.sock',
+		'db_user'       => 'pca',
+		'db_pass'       => 'pca',
+		);
+    my $db = new DB(\%DB);
+
+it yet run.
+
+=item B<Connect>
+
+Connect resource from database.
+
+    $db->connect();
+
+You can unset the variable: %DB, %PQ or $OC, like this:
+
+    undef %PQ;
+
+or 
+
+    undef %DB;
+
+or
+
+    undef %OC;
+
+
+=item B<Query>
+
+Simple query:
+
+    $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
+    while (my $row = $db->fetch_array())
+    {
+    	print $row, "\n";
+    }
+
+Common:
+
+    my $query = $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
+    while (my $row = $db->fetch_array($query))
+    {
+    	print $row, "\n";
+    }
+
+=item B<Disconnect>
+
+Release resource from database.
+
+    $db->close();
+
+=back
+
+=head1 OPTIONS
+
+Nothing because of no script.
+
+=head1 DESCRIPTION
+
+C<DBQuery> allows you to query some information from some different type databases, like mysql, postgresql and oracle, so our system need module which include L<DBD::mysql>, L<DBD::PgPP> and L<DBD::Oracle>.
+
+In furture, it'll support more and more database types if you want. You can use C<DBQuery> very expediently. so we use database easily.
+
+B<This lib> can use dsn which contains all connection infomation or use all single items, like db_host, db_pass etc.
+
+=head1 TIPS
+
+There's some extra tips found in our own's everyday use:
+
+=over
+
+=item B<CUSTOM>
+
+Like php-mysql
+
+   $db->connect();
+   $db->query();
+   $db->fetch_array();
+
+=item B<ABSTRACT>
+
+One line description of the module. Will be included in PPD file.
+
+=item B<ABSTRACT_FROM>
+
+Name of the file that contains the package description. MakeMaker looks
+for a line in the POD matching /^($package\s-\s)(.*)/. This is typically
+the first line in the "=head1 NAME" section. $2 becomes the abstract.
+
+=back
+
+=head1 PREREQUISITES
+
+This module uses L<DBI>.
+
+=head1 INSTALLATION
+
+If you are not soudoer or root, you need contact administrator.
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+Win32 users should replace "make" with "nmake".
+
+=head1 SOURCE CONTROL
+
+You can always get the latest SSH::Batch source from its
+public Git repository:
+
+    http://github.com/cnangel/DB/tree/master
+
+If you have a branch for me to pull, please let me know ;)
+
+=head1 TODO
+
+=over
+
+=item *
+
+Sqlite2 and sqlite3 will be supported.
+
+=back
+
+=head1 SEE ALSO
+
+L<DBI>, L<DBD::mysql>, L<DBD::PgPP>, L<DBD::Oracle>
+
+=head1 COPYRIGHT AND LICENSE
+
+This module as well as its programs are licensed under the BSD License.
+
+Copyright (c) 2007-2008, Yahoo! China Relevance Team, Alibaba Inc. All rights reserved.
+
+Copyright (c) 2009, Alibaba Search Center, Alibaba Inc. All rights reserved.
+
+Copyright (C) 2009, Cnangel Li (cnangel). All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+=over
+
+=item *
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+=item *
+
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+=item *
+
+Neither the name of the Alibaba Search Center, Alibaba Inc. nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+=back
+
+=head1 AUTHOR 
+
+B<Cnangel> (I<junliang.li@alibaba-inc.com>)
+
+=head1 HISTORY
+
+I<Fri Jun 26 09:47:13 2009> B<v0.001> Build.
+
+I<Mon Jun 29 10:30:10 2009> B<v0.002> modify DB to DBquery.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+

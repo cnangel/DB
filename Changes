@@ -1,0 +1,7 @@
+Revision history for Perl extension DBQuery.
+
+0.02  Mon Jun 29 10:22:35 2009
+	- modify name: DB to DBQuery
+0.01  Wed Jun 24 17:08:43 2009
+	- original version; created by cnangel
+
