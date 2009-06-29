@@ -1,10 +1,10 @@
 package DBQuery;
 
-# $Id: DBQuery.pm,v 1.0.0 2009/06/26 10:51:18 Cnangel Exp $
+# $Id: DBQuery.pm,v 1.0.0 2009/06/29 16:55:40 Cnangel Exp $
 
 use DBI;
 
-$DBQuery::VERSION = 0.002;
+$DBQuery::VERSION = 0.003;
 
 sub new
 {
@@ -16,7 +16,7 @@ sub new
 		$self = {
 			'dsn' => $DB->{dsn},
 			'user' => $DB->{db_user},
-			'pass' => $DB->{db_pass},
+			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
 			'dbh' => undef,
 			'sth' => undef,
 		};
@@ -29,13 +29,19 @@ sub new
 #	$DB->{db_sock} = '/tmp/mysql.sock' unless (defined $DB->{db_sock});
 		$self = {
 			'dsn' => $DB->{driver_name} eq 'mysql'
-				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} . ';hostname=' . $DB->{db_host} . ';' . (defined $DB->{db_sock} ? 'mysql_socket=' . $DB->{db_sock} . ';' : 'mysql_socket=/tmp/mysql.sock;') . (defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=3306') 
+				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} . ';' .
+				(defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') .
+				(defined $DB->{db_sock} ? 'mysql_socket=' . $DB->{db_sock} . ';' : 'mysql_socket=/tmp/mysql.sock;') . 
+				(defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=3306') 
 				: ($DB->{driver_name} eq 'pgsql' 
-						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . ';' . (defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') . (defined $DB->{db_path} ? 'path=' . $DB->{db_path} . ';' : '') . (defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=5432')
+						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . ';' . 
+						(defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') . 
+						(defined $DB->{db_path} ? 'path=' . $DB->{db_path} . ';' : '') .
+						(defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=5432')
 						: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
 				  ),
 			'user' => $DB->{db_user},
-			'pass' => $DB->{db_pass},
+			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
 			'dbh' => undef,
 			'sth' => undef,
 		};
@@ -304,7 +310,9 @@ B<Cnangel> (I<junliang.li@alibaba-inc.com>)
 
 I<Fri Jun 26 09:47:13 2009> B<v0.001> Build.
 
-I<Mon Jun 29 10:30:10 2009> B<v0.002> modify DB to DBquery.
+I<Mon Jun 29 10:30:10 2009> B<v0.002> Modify DB to DBquery.
+
+I<Mon Jun 29 16:56:02 2009> B<v0.003> Can miss out the arg: db_host, and optimize the test.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
