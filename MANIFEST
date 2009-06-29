@@ -17,7 +17,6 @@ inc/Test/Base/Filter.pm
 inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm
-lib/DB.pm
 lib/DBQuery.pm
 Makefile.PL
 Makefile.PL.20090625
@@ -25,5 +24,5 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
 README
-t/DB.pm
-t/DB.t
+t/DBQuery.pm
+t/DBQuery.t
