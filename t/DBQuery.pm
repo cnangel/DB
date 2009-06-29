@@ -1,4 +1,4 @@
-package t::DB;
+package t::DBQuery;
 
 use Test::Base -Base;
 use IPC::Run3 (); 
