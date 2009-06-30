@@ -1,6 +1,7 @@
 package t::DBQuery;
 
 use Test::Base -Base;
+#use IPC::Run3 ();
 use FindBin;
 use Data::Dumper;
 
