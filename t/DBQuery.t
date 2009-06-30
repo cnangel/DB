@@ -14,7 +14,7 @@ __DATA__
 --- connect
 --- args: 
 --- db_user: root
---- db_pass: 5382034
+--- db_pass: 
 --- db_name: test
 --- db_sock: /var/lib/mysql/mysql.sock
 --- err

@@ -19,6 +19,9 @@ To install this module type the following:
    perl Makefile.PL
    make
    make test
+
+if some wrong here when make test, you should modify t/DBQuery.t which contains db_user or db_pass etc.
+
    make install
 
 DEPENDENCIES

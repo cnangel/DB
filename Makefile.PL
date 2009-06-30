@@ -8,19 +8,13 @@ author              ('Cnangel <junliang.li@alibaba-inc.com>');
 perl_version        ('5.006001');
 all_from            ('lib/DBQuery.pm');
 
-requires            ('DBI'   => '1.6');
+requires            ('DBI'   => '1.4');
 
-#build_requires      ('IPC::Run3');
-build_requires      ('Test::Base' => '0.50');
+build_requires      ('Test::Base' => '0.10');
 
 use_test_base;
 
 no_index( directory => qw< t inc > );
-
-#install_script      ('bin/fornodes');
-#install_script      ('bin/atnodes');
-#install_script      ('bin/tonodes');
-#install_script      ('bin/key2nodes');
 
 auto_install();
 WriteAll();

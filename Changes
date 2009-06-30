@@ -1,5 +1,7 @@
 Revision history for Perl extension DBQuery.
 
+0.04  Tue Jun 30 17:31:44 2009
+	- modify the test case.
 0.03  Mon Jun 29 16:53:04 2009
 	- can miss out the arg: db_host, and optimize the test
 0.02  Mon Jun 29 10:22:35 2009
