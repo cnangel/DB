@@ -37,6 +37,15 @@ sub run_test ($)
 	{
 		eval { use DBQuery; };
 		is(0, ($@ ? 1 : 0), "$name - status ok");
+		my $cmd = "mysql -u" . $block->db_user . ($block->db_pass ? " -p" . $block->db_pass : "") . " " . $block->db_name . " -e 'show tables'";
+		#eval { qx($cmd); };
+		my $ret = system($cmd);
+		#if ($@) 
+		if ($ret)
+		{
+			pass("tests skipped because of username or password\n");
+			return;
+		}
 		diag "\n" . $block->db_user . ' as database user';
 		diag $block->db_pass . ' as database password';
 #		warn Dumper $block->original_values;
