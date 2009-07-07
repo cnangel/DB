@@ -1,5 +1,7 @@
 Revision history for Perl extension DBQuery.
 
+0.05  Tue Jul 07 10:19:28 2009
+	- Repair and pass test.
 0.04  Tue Jun 30 17:31:44 2009
 	- modify the test case.
 0.03  Mon Jun 29 16:53:04 2009
