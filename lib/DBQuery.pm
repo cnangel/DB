@@ -1,10 +1,10 @@
 package DBQuery;
 
-# $Id: DBQuery.pm,v 1.0.0 2009/06/29 16:55:40 Cnangel Exp $
+# $Id: DBQuery.pm,v 1.0.0 2009/12/02 11:40:31 Cnangel Exp $
 
 use DBI;
 
-$DBQuery::VERSION = 0.005;
+$DBQuery::VERSION = 0.006;
 
 sub new
 {
@@ -117,7 +117,7 @@ Init mysql struct example:
 		'db_pass'	=> 'yahoo',
 		'db_name'	=> 'ADCode',
 		);
-    my $db = new DB(\%DB);
+    my $db = new DBQuery(\%DB);
 
 or postgresql:
 
@@ -128,7 +128,7 @@ or postgresql:
 		'db_user'		=> 'cnedb',
 		'db_pass'		=> 'cnedb',
 		);
-    my $db = new DB(\%PQ);
+    my $db = new DBQuery(\%PQ);
 
 or oracle:
 
@@ -138,7 +138,7 @@ or oracle:
 		'db_user'		=> 'alibaba',
 		'db_pass'		=> 'ocndb',
 		);
-    my $db = new DB(\%OC);
+    my $db = new DBQuery(\%OC);
 
 over this, you can use dsn for init structure.
 
@@ -147,7 +147,7 @@ over this, you can use dsn for init structure.
 		'db_user'       => 'pca',
 		'db_pass'       => 'pca',
 		);
-    my $db = new DB(\%DB);
+    my $db = new DBQuery(\%DB);
 
 it yet run.
 
