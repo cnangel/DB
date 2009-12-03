@@ -4,7 +4,7 @@ package DBQuery;
 
 use DBI;
 
-$DBQuery::VERSION = 0.006;
+$DBQuery::VERSION = 0.007;
 
 sub new
 {
@@ -73,6 +73,12 @@ sub fetch_array
 {
 	my $self = shift;
 	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_array() : $self->{sth}->fetchrow_array();
+}
+
+sub fetch_arrayref
+{
+	my $self = shift;
+	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_arrayref() : $self->{sth}->fetchrow_arrayref();
 }
 
 sub fetch_hash
@@ -175,9 +181,9 @@ or
 Simple query:
 
     $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
-    while (my $row = $db->fetch_array())
+    while (my @row = $db->fetch_array())
     {
-    	print $row, "\n";
+    	print Dumper @row, "\n";
     }
 
 Common:
@@ -185,7 +191,7 @@ Common:
     my $query = $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
     while (my $row = $db->fetch_array($query))
     {
-    	print $row, "\n";
+    	print Dumper $row, "\n";
     }
 
 =item B<Disconnect>
@@ -207,6 +213,38 @@ C<DBQuery> allows you to query some information from some different type databas
 In furture, it'll support more and more database types if you want. You can use C<DBQuery> very expediently. so we use database easily.
 
 B<This lib> can use dsn which contains all connection infomation or use all single items, like db_host, db_pass etc.
+
+=head2 $self->new()
+
+Construct.
+
+=head2  $self->connect()
+
+Create a connect.
+
+=head2  $self->close()
+
+Close this connection.
+
+=head2 $self->query()
+
+Send a query.
+
+=head2 $self->fetch_array()
+
+Fetch and return array.
+
+=head2 $self->fetch_arrayref()
+
+Fetch and return reference of array.
+
+=head2 $self->fetch_hash()
+
+Fetch and return reference of hash.
+
+=head2 $self->quote()
+
+Quote some characters.
 
 =head1 TIPS
 
