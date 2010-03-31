@@ -51,7 +51,11 @@ sub new
 sub connect
 {
 	my $self = shift;
-	$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
+	if ($_[0]) {
+		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1, 'mysql_enable_utf8' => 1});
+	} else {
+		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
+	}
 	return;
 }
 
