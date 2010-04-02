@@ -1,10 +1,10 @@
 package DBQuery;
 
-# $Id: DBQuery.pm,v 0.8.0 2010/03/31 12:56:43 Cnangel Exp $
+# $Id: DBQuery.pm,v 1.0.0-0 2010/04/02 14:57:37 Cnangel Exp $
 
 use DBI;
 
-$DBQuery::VERSION = 0.008;
+$DBQuery::VERSION = 1.000;
 
 sub new
 {
