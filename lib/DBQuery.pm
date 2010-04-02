@@ -4,7 +4,7 @@ package DBQuery;
 
 use DBI;
 
-$DBQuery::VERSION = 1.000;
+$DBQuery::VERSION = "1.000";
 
 sub new
 {
