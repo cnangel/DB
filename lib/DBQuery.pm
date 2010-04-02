@@ -26,6 +26,7 @@ sub new
 		$DB->{driver_name} = 'mysql' unless (defined $DB->{driver_name});
 		$DB->{driver_name} = ucfirst($DB->{driver_name}) if ($DB->{driver_name} eq "oracle");
 		$self = {
+			'driver' => $DB->{driver_name},
 			'dsn' => $DB->{driver_name} eq 'mysql'
 				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} . ';' .
 				(defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') .
@@ -41,6 +42,8 @@ sub new
 			'user' => $DB->{db_user},
 			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
 			'pconnect' => $DB->{db_pconnect},
+			'utf8' => $DB->{db_enable_utf8},
+			'autocommit' => (defined $DB->{db_autocommit} ? $DB->{db_autocommit} : 1),
 			'dbh' => undef,
 			'sth' => undef,
 		};
@@ -57,7 +60,12 @@ sub connect
 	} else {
 		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
 	}
-	$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
+
+	if ($DB->{driver_name} eq 'mysql') {
+		$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
+		$self->{dbh}->{mysql_enable_utf8} = $self->{utf8} ? 1 : 0;
+		$self->{dbh}->{mysql_no_autocommit_cmd} = $self->{autocommit} ? 0 : 1;
+	}
 	return;
 }
 
@@ -124,10 +132,13 @@ use DBQuery;
 Init mysql struct example:
 
     my %DB = (
-		'db_host'	=> 'web10.search.cnb.yahoo.com',
-		'db_user'	=> 'yahoo',
-		'db_pass'	=> 'yahoo',
-		'db_name'	=> 'ADCode',
+		'db_host'			=> 'web10.search.cnb.yahoo.com',
+		'db_user'			=> 'yahoo',
+		'db_pass'			=> 'yahoo',
+		'db_name'			=> 'ADCode',
+		'db_pconnect'		=> 1,
+		'db_autocommit'		=> 1,
+		'db_enable_utf8'	=> 0,
 		);
     my $db = new DBQuery(\%DB);
 
@@ -155,7 +166,7 @@ or oracle:
 over this, you can use dsn for init structure.
 
     my %DB = (
-		'dsn'		=> 'dbi:mysql:database=testinter;host=localhost;mysql_socket=/var/lib/mysql/mysql.sock',
+		'dsn'		=> 'dbi:mysql:database=testinter;host=localhost;mysql_socket=/var/lib/mysql/mysql.sock;mysql_use_result=1',
 		'db_user'       => 'pca',
 		'db_pass'       => 'pca',
 		);
