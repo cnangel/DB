@@ -40,6 +40,7 @@ sub new
 				  ),
 			'user' => $DB->{db_user},
 			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
+			'pconnect' => $DB->{db_pconnect},
 			'dbh' => undef,
 			'sth' => undef,
 		};
@@ -56,6 +57,7 @@ sub connect
 	} else {
 		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
 	}
+	$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
 	return;
 }
 
