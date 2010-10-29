@@ -206,9 +206,9 @@ Simple query:
 Common:
 
     my $query = $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
-    while (my $row = $db->fetch_array($query))
+    while (my @row = $db->fetch_array($query))
     {
-    	print Dumper $row, "\n";
+    	print Dumper @row, "\n";
     }
 
 =item B<Disconnect>
@@ -315,11 +315,17 @@ If you have a branch for me to pull, please let me know ;)
 
 =head1 TODO
 
+To this:
+
 =over
 
 =item *
 
 Sqlite2 and sqlite3 will be supported.
+
+=item *
+
+New engine for DBQuery.
 
 =back
 
