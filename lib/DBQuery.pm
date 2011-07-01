@@ -136,6 +136,7 @@ Init mysql struct example:
 		'db_user'			=> 'yahoo',
 		'db_pass'			=> 'yahoo',
 		'db_name'			=> 'ADCode',
+		'db_port'			=> 3306,
 		'db_pconnect'		=> 1,
 		'db_autocommit'		=> 1,
 		'db_enable_utf8'	=> 0,
@@ -160,6 +161,7 @@ or oracle:
 		'db_host'		=> 'ocndb',
 		'db_user'		=> 'alibaba',
 		'db_pass'		=> 'ocndb',
+		'db_port'		=> 3306,
 		);
     my $db = new DBQuery(\%OC);
 
