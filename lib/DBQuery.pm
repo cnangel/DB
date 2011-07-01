@@ -4,7 +4,7 @@ package DBQuery;
 
 use DBI;
 
-$DBQuery::VERSION = "1.000";
+$DBQuery::VERSION = "1.001";
 
 sub new
 {
@@ -61,7 +61,7 @@ sub connect
 		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
 	}
 
-	if ($DB->{driver_name} eq 'mysql') {
+	if ($self->{driver} eq 'mysql') {
 		$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
 		$self->{dbh}->{mysql_enable_utf8} = $self->{utf8} ? 1 : 0;
 		$self->{dbh}->{mysql_no_autocommit_cmd} = $self->{autocommit} ? 0 : 1;
