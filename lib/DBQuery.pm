@@ -41,9 +41,10 @@ sub new
 							? 'dbi:' . $DB->{driver_name} . 
 							(defined $DB->{db_host} ? ':host=' . $DB->{db_host} : ':host=localhost') . 
 							(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : '') .
-							(defined $DB->{db_sid} ? ';sid=' . $DB->{db_sid} : '')
+							(defined $DB->{db_sid} ? ';sid=' . $DB->{db_sid} : '') .
 							(defined $DB->{db_name} && !defined $DB->{db_sid} ? ';sid=' . $DB->{db_name} : '')
 							: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
+						  )
 				  ),
 			'user' => $DB->{db_user},
 			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
