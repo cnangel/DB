@@ -1,10 +1,10 @@
 package DBQuery;
 
-# $Id: DBQuery.pm,v 1.0.0-0 2010/04/02 14:57:37 Cnangel Exp $
+# $Id: DBQuery.pm,v 1.0.0-0 2011/07/07 11:02:57 Cnangel Exp $
 
 use DBI;
 
-$DBQuery::VERSION = "1.001";
+$DBQuery::VERSION = "1.100";
 
 sub new
 {
@@ -28,22 +28,30 @@ sub new
 		$self = {
 			'driver' => $DB->{driver_name},
 			'dsn' => $DB->{driver_name} eq 'mysql'
-				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} . ';' .
-				(defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') .
-				(defined $DB->{db_sock} ? 'mysql_socket=' . $DB->{db_sock} . ';' : 'mysql_socket=/var/lib/mysql/mysql.sock;') . 
-				(defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=3306') 
+				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} .
+				(defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') .
+				(defined $DB->{db_sock} ? ';mysql_socket=' . $DB->{db_sock} : ';mysql_socket=/var/lib/mysql/mysql.sock') . 
+				(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=3306') 
 				: ($DB->{driver_name} eq 'pgsql' 
-						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . ';' . 
-						(defined $DB->{db_host} ? 'host=' . $DB->{db_host} . ';' : '') . 
-						(defined $DB->{db_path} ? 'path=' . $DB->{db_path} . ';' : '') .
-						(defined $DB->{db_port} ? 'port=' . $DB->{db_port} : 'port=5432')
-						: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
+						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . '' . 
+						(defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') . 
+						(defined $DB->{db_path} ? ';path=' . $DB->{db_path} : '') .
+						(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=5432')
+						: ($DB->{driver_name} eq 'Oracle'
+							? 'dbi:' . $DB->{driver_name} . 
+							(defined $DB->{db_host} ? ':host=' . $DB->{db_host} : ':host=localhost') . 
+							(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : '') .
+							(defined $DB->{db_sid} ? ';sid=' . $DB->{db_sid} : '')
+							(defined $DB->{db_name} && !defined $DB->{db_sid} ? ';sid=' . $DB->{db_name} : '')
+							: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
 				  ),
 			'user' => $DB->{db_user},
 			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
 			'pconnect' => $DB->{db_pconnect},
 			'utf8' => $DB->{db_enable_utf8},
 			'autocommit' => (defined $DB->{db_autocommit} ? $DB->{db_autocommit} : 1),
+			'LongReadLen' => $DB->{db_longreadlen},
+			'LongTruncOk' => $DB->{db_longtruncok},
 			'dbh' => undef,
 			'sth' => undef,
 		};
@@ -55,7 +63,7 @@ sub new
 sub connect
 {
 	my $self = shift;
-	if ($_[0]) {
+	if ($_[0] && $self->{driver} eq 'mysql') {
 		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1, 'mysql_enable_utf8' => 1});
 	} else {
 		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
@@ -65,6 +73,9 @@ sub connect
 		$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
 		$self->{dbh}->{mysql_enable_utf8} = $self->{utf8} ? 1 : 0;
 		$self->{dbh}->{mysql_no_autocommit_cmd} = $self->{autocommit} ? 0 : 1;
+	} elsif ($self->{driver} eq 'Oracle') {
+		$self->{dbh}->{LongReadLen} = $self->{LongReadLen};
+		$self->{dbh}->{LongTruncOk} = $self->{LongTruncOk};
 	}
 	return;
 }
@@ -137,9 +148,9 @@ Init mysql struct example:
 		'db_pass'			=> 'yahoo',
 		'db_name'			=> 'ADCode',
 		'db_port'			=> 3306,
-		'db_pconnect'		=> 1,
-		'db_autocommit'		=> 1,
-		'db_enable_utf8'	=> 0,
+		'db_pconnect'			=> 1,
+		'db_autocommit'			=> 1,
+		'db_enable_utf8'		=> 0,
 		);
     my $db = new DBQuery(\%DB);
 
@@ -157,11 +168,14 @@ or postgresql:
 or oracle:
 
     my %OC = (
-		'driver_name'		=> 'oracle',
-		'db_host'		=> 'ocndb',
-		'db_user'		=> 'alibaba',
-		'db_pass'		=> 'ocndb',
-		'db_port'		=> 3306,
+		'driver_name'			=> 'oracle',
+		'db_host'			=> 'ocndb',
+		'db_user'			=> 'alibaba',
+		'db_pass'			=> 'ocndb',
+		'db_port'			=> 1521,
+		'db_name'			=> 'ctutest', // the same as db_sid
+		'db_longreadlen'		=> 33554432,
+		'db_longtruncok'		=> 1,
 		);
     my $db = new DBQuery(\%OC);
 
