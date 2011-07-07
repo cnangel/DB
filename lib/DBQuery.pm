@@ -219,6 +219,8 @@ Simple query:
     	print Dumper @row, "\n";
     }
 
+    $db->query("alter session set nls_date_format = 'yyyy-mm-dd hh24:mi:ss'");
+
 Common:
 
     my $query = $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
