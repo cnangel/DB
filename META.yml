@@ -1,7 +1,7 @@
 ---
 abstract: 'Lib of DB Query'
 author:
-  - 'Cnangel <junliang.li@alibaba-inc.com>'
+  - 'Cnangel <junliang.li#alibaba-inc.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
   Test::Base: 0.10
