@@ -4,7 +4,7 @@ use inc::Module::Install;
 
 name                ('DBQuery');
 license             ('bsd');
-author              ('Cnangel <junliang.li#alibaba-inc.com>');
+author              ('Cnangel <cnangel@gmail.com>');
 perl_version        ('5.006001');
 all_from            ('lib/DBQuery.pm');
 
