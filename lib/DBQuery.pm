@@ -4,7 +4,7 @@ package DBQuery;
 
 use DBI;
 
-$DBQuery::VERSION = "1.101";
+$DBQuery::VERSION = "1.105";
 
 sub new
 {
@@ -93,6 +93,12 @@ sub quote
 {
 	my $self = shift;
 	return $self->{dbh}->quote($_[0]);
+}
+
+sub insert_id
+{
+	my $self = shift;
+	return $self->{dbh}->{'mysql_insertid'};
 }
 
 sub fetch_array
@@ -281,6 +287,10 @@ Fetch and return reference of hash.
 =head2 $self->quote()
 
 Quote some characters.
+
+=head2 $self->insert_id()
+
+Return last insert id.
 
 =head1 TIPS
 
