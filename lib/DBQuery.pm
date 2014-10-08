@@ -392,7 +392,7 @@ Neither the name of the Alibaba Search Center, Alibaba Inc. nor the names of its
 
 =head1 AUTHOR 
 
-B<Cnangel> (I<junliang.li#alibaba-inc.com>)
+B<Cnangel> (I<cnangel@gmail.com>)
 
 =head1 HISTORY
 
