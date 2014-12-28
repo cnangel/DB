@@ -1,130 +1,130 @@
 package DBQuery;
 
-# $Id: DBQuery.pm,v 1.0.0-0 2011/07/07 11:02:57 Cnangel Exp $
+# $Id: DBQuery.pm,v 1.2.0-0 2014/12/28 12:02:21 Cnangel Exp $
 
 use DBI;
 
-$DBQuery::VERSION = "1.105";
+$DBQuery::VERSION = "1.20";
 
 sub new
 {
-	my $class = shift;
-	my $DB = shift;
-	my $self;
-	if (defined $DB->{dsn})
-	{
-		$self = {
-			'dsn' => $DB->{dsn},
-			'user' => $DB->{db_user},
-			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
-			'dbh' => undef,
-			'sth' => undef,
-		};
-	}
-	else
-	{
-		$DB->{driver_name} = 'mysql' unless (defined $DB->{driver_name});
-		$DB->{driver_name} = ucfirst($DB->{driver_name}) if ($DB->{driver_name} eq "oracle");
-		$self = {
-			'driver' => $DB->{driver_name},
-			'dsn' => $DB->{driver_name} eq 'mysql'
-				? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} .
-				(defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') .
-				(defined $DB->{db_sock} ? ';mysql_socket=' . $DB->{db_sock} : ';mysql_socket=/var/lib/mysql/mysql.sock') . 
-				(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=3306') 
-				: ($DB->{driver_name} eq 'pgsql' 
-						? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . '' . 
-						(defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') . 
-						(defined $DB->{db_path} ? ';path=' . $DB->{db_path} : '') .
-						(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=5432')
-						: ($DB->{driver_name} eq 'Oracle'
-							? 'dbi:' . $DB->{driver_name} . 
-							(defined $DB->{db_host} ? ':host=' . $DB->{db_host} : ':host=localhost') . 
-							(defined $DB->{db_port} ? ';port=' . $DB->{db_port} : '') .
-							(defined $DB->{db_sid} ? ';sid=' . $DB->{db_sid} : '') .
-							(defined $DB->{db_name} && !defined $DB->{db_sid} ? ';sid=' . $DB->{db_name} : '')
-							: 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
-						  )
-				  ),
-			'user' => $DB->{db_user},
-			'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
-			'pconnect' => $DB->{db_pconnect},
-			'utf8' => $DB->{db_enable_utf8},
-			'autocommit' => (defined $DB->{db_autocommit} ? $DB->{db_autocommit} : 1),
-			'LongReadLen' => $DB->{db_longreadlen},
-			'LongTruncOk' => $DB->{db_longtruncok},
-			'dbh' => undef,
-			'sth' => undef,
-		};
-	}
-	bless $self, $class;
-	return $self;
+    my $class = shift;
+    my $DB = shift;
+    my $self;
+    if (defined $DB->{dsn})
+    {
+        $self = {
+            'dsn' => $DB->{dsn},
+            'user' => $DB->{db_user},
+            'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
+            'dbh' => undef,
+            'sth' => undef,
+        };
+    }
+    else
+    {
+        $DB->{driver_name} = 'mysql' unless (defined $DB->{driver_name});
+        $DB->{driver_name} = ucfirst($DB->{driver_name}) if ($DB->{driver_name} eq "oracle");
+        $self = {
+            'driver' => $DB->{driver_name},
+            'dsn' => $DB->{driver_name} eq 'mysql'
+                ? 'dbi:' . $DB->{driver_name} . ':database=' . $DB->{db_name} .
+                (defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') .
+                (defined $DB->{db_sock} ? ';mysql_socket=' . $DB->{db_sock} : ';mysql_socket=/var/lib/mysql/mysql.sock') . 
+                (defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=3306') 
+                : ($DB->{driver_name} eq 'pgsql' 
+                        ? 'dbi:' . $DB->{driver_name} . ':dbname=' . $DB->{db_name} . '' . 
+                        (defined $DB->{db_host} ? ';host=' . $DB->{db_host} : '') . 
+                        (defined $DB->{db_path} ? ';path=' . $DB->{db_path} : '') .
+                        (defined $DB->{db_port} ? ';port=' . $DB->{db_port} : ';port=5432')
+                        : ($DB->{driver_name} eq 'Oracle'
+                            ? 'dbi:' . $DB->{driver_name} . 
+                            (defined $DB->{db_host} ? ':host=' . $DB->{db_host} : ':host=localhost') . 
+                            (defined $DB->{db_port} ? ';port=' . $DB->{db_port} : '') .
+                            (defined $DB->{db_sid} ? ';sid=' . $DB->{db_sid} : '') .
+                            (defined $DB->{db_name} && !defined $DB->{db_sid} ? ';sid=' . $DB->{db_name} : '')
+                            : 'dbi:' . $DB->{driver_name} . (defined $DB->{db_host} ? ':' . $DB->{db_host} : '')
+                          )
+                  ),
+            'user' => $DB->{db_user},
+            'pass' => (defined $DB->{db_pass} ? $DB->{db_pass} : ''),
+            'pconnect' => $DB->{db_pconnect},
+            'utf8' => $DB->{db_enable_utf8},
+            'autocommit' => (defined $DB->{db_autocommit} ? $DB->{db_autocommit} : 1),
+            'LongReadLen' => $DB->{db_longreadlen},
+            'LongTruncOk' => $DB->{db_longtruncok},
+            'dbh' => undef,
+            'sth' => undef,
+        };
+    }
+    bless $self, $class;
+    return $self;
 }
 
 sub connect
 {
-	my $self = shift;
-	if ($_[0] && $self->{driver} eq 'mysql') {
-		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1, 'mysql_enable_utf8' => 1});
-	} else {
-		$self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
-	}
+    my $self = shift;
+    if ($_[0] && $self->{driver} eq 'mysql') {
+        $self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1, 'mysql_enable_utf8' => 1});
+    } else {
+        $self->{dbh} = DBI->connect($self->{dsn}, $self->{user}, $self->{pass}, {'RaiseError' => 1});
+    }
 
-	if ($self->{driver} eq 'mysql') {
-		$self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
-		$self->{dbh}->{mysql_enable_utf8} = $self->{utf8} ? 1 : 0;
-		$self->{dbh}->{mysql_no_autocommit_cmd} = $self->{autocommit} ? 0 : 1;
-	} elsif ($self->{driver} eq 'Oracle') {
-		$self->{dbh}->{LongReadLen} = $self->{LongReadLen};
-		$self->{dbh}->{LongTruncOk} = $self->{LongTruncOk};
-	}
-	return;
+    if ($self->{driver} eq 'mysql') {
+        $self->{dbh}->{mysql_auto_reconnect} = $self->{pconnect} ? 1 : 0;
+        $self->{dbh}->{mysql_enable_utf8} = $self->{utf8} ? 1 : 0;
+        $self->{dbh}->{mysql_no_autocommit_cmd} = $self->{autocommit} ? 0 : 1;
+    } elsif ($self->{driver} eq 'Oracle') {
+        $self->{dbh}->{LongReadLen} = $self->{LongReadLen};
+        $self->{dbh}->{LongTruncOk} = $self->{LongTruncOk};
+    }
+    return;
 }
 
 sub query
 {
-	my $self = shift;
-	$self->{sth} = $self->{dbh}->prepare($_[0]);
-	$self->{sth}->execute();
-	return $self->{sth};
+    my $self = shift;
+    $self->{sth} = $self->{dbh}->prepare($_[0]);
+    $self->{sth}->execute();
+    return $self->{sth};
 }
 
 sub quote
 {
-	my $self = shift;
-	return $self->{dbh}->quote($_[0]);
+    my $self = shift;
+    return $self->{dbh}->quote($_[0]);
 }
 
 sub insert_id
 {
-	my $self = shift;
-	return $self->{dbh}->{'mysql_insertid'};
+    my $self = shift;
+    return $self->{dbh}->{'mysql_insertid'};
 }
 
 sub fetch_array
 {
-	my $self = shift;
-	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_array() : $self->{sth}->fetchrow_array();
+    my $self = shift;
+    return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_array() : $self->{sth}->fetchrow_array();
 }
 
 sub fetch_arrayref
 {
-	my $self = shift;
-	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_arrayref() : $self->{sth}->fetchrow_arrayref();
+    my $self = shift;
+    return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_arrayref() : $self->{sth}->fetchrow_arrayref();
 }
 
 sub fetch_hash
 {
-	my $self = shift;
-	return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_hashref() : $self->{sth}->fetchrow_hashref();
+    my $self = shift;
+    return ref($_[0]) eq 'DBI::st' ? $_[0]->fetchrow_hashref() : $self->{sth}->fetchrow_hashref();
 }
 
 sub close
 {
-	my $self = shift;
-	$self->{sth}->finish() if (defined $self->{sth});
-	$self->{dbh}->disconnect if (defined $self->{dbh});
-	return;
+    my $self = shift;
+    $self->{sth}->finish() if (defined $self->{sth});
+    $self->{dbh}->disconnect if (defined $self->{dbh});
+    return;
 }
 
 1;
@@ -150,49 +150,49 @@ use DBQuery;
 Init mysql struct example:
 
     my %DB = (
-		'db_host'			=> 'web10.search.cnb.yahoo.com',
-		'db_user'			=> 'yahoo',
-		'db_pass'			=> 'yahoo',
-		'db_name'			=> 'ADCode',
-		'db_port'			=> 3306,
-		'db_pconnect'			=> 1,
-		'db_autocommit'			=> 1,
-		'db_enable_utf8'		=> 0,
-		);
+        'db_host'            => 'web10.search.cnb.yahoo.com',
+        'db_user'            => 'yahoo',
+        'db_pass'            => 'yahoo',
+        'db_name'            => 'ADCode',
+        'db_port'            => 3306,
+        'db_pconnect'            => 1,
+        'db_autocommit'            => 1,
+        'db_enable_utf8'        => 0,
+        );
     my $db = new DBQuery(\%DB);
 
 or postgresql:
 
     my %PQ = (
-		'driver_name'		=> 'PgPP',
-		'db_host'		=> 'tool2.search.cnb.yahoo.com',
-		'db_name'		=> 'cnedb',
-		'db_user'		=> 'cnedb',
-		'db_pass'		=> 'cnedb',
-		);
+        'driver_name'        => 'PgPP',
+        'db_host'        => 'tool2.search.cnb.yahoo.com',
+        'db_name'        => 'cnedb',
+        'db_user'        => 'cnedb',
+        'db_pass'        => 'cnedb',
+        );
     my $db = new DBQuery(\%PQ);
 
 or oracle:
 
     my %OC = (
-		'driver_name'			=> 'oracle',
-		'db_host'			=> 'ocndb',
-		'db_user'			=> 'alibaba',
-		'db_pass'			=> 'ocndb',
-		'db_port'			=> 1521,
-		'db_name'			=> 'ctutest', // the same as db_sid
-		'db_longreadlen'		=> 33554432,
-		'db_longtruncok'		=> 1,
-		);
+        'driver_name'            => 'oracle',
+        'db_host'            => 'ocndb',
+        'db_user'            => 'alibaba',
+        'db_pass'            => 'ocndb',
+        'db_port'            => 1521,
+        'db_name'            => 'ctutest', // the same as db_sid
+        'db_longreadlen'        => 33554432,
+        'db_longtruncok'        => 1,
+        );
     my $db = new DBQuery(\%OC);
 
 over this, you can use dsn for init structure.
 
     my %DB = (
-		'dsn'		=> 'dbi:mysql:database=testinter;host=localhost;mysql_socket=/var/lib/mysql/mysql.sock;mysql_use_result=1',
-		'db_user'       => 'pca',
-		'db_pass'       => 'pca',
-		);
+        'dsn'        => 'dbi:mysql:database=testinter;host=localhost;mysql_socket=/var/lib/mysql/mysql.sock;mysql_use_result=1',
+        'db_user'       => 'pca',
+        'db_pass'       => 'pca',
+        );
     my $db = new DBQuery(\%DB);
 
 it yet run.
@@ -223,7 +223,7 @@ Simple query:
     $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
     while (my @row = $db->fetch_array())
     {
-    	print Dumper @row, "\n";
+        print Dumper @row, "\n";
     }
 
     $db->query("alter session set nls_date_format = 'yyyy-mm-dd hh24:mi:ss'");
@@ -233,7 +233,7 @@ Common:
     my $query = $db->query("select url from edb.white_black_grey where spamtype=':demote2:' limit 10;");
     while (my @row = $db->fetch_array($query))
     {
-    	print Dumper @row, "\n";
+        print Dumper @row, "\n";
     }
 
 =item B<Disconnect>
@@ -252,9 +252,9 @@ Nothing because of no script.
 
 C<DBQuery> allows you to query some information from some different type databases, like mysql, postgresql and oracle, so our system need module which include L<DBD::mysql>, L<DBD::PgPP> and L<DBD::Oracle>.
 
-In furture, it'll support more and more database types if you want. You can use C<DBQuery> very expediently. so we use database easily.
+In future, it'll support more and more database types if you want. You can use C<DBQuery> very expediently. so we use database easily.
 
-B<This lib> can use dsn which contains all connection infomation or use all single items, like db_host, db_pass etc.
+B<This lib> can use dsn which contains all connection information or use all single items, like db_host, db_pass etc.
 
 =head2 $self->new()
 
@@ -324,7 +324,7 @@ This module uses L<DBI>.
 
 =head1 INSTALLATION
 
-If you are not soudoer or root, you need contact administrator.
+If you are not sudoer or root, you need contact administrator.
 
     perl Makefile.PL
     make

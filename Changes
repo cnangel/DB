@@ -1,5 +1,8 @@
 Revision history for Perl extension DBQuery.
 
+1.20  Sun Dec 28 11:24:25 2014 
+    - change compile method;
+	- add some function.
 1.10  Thu Jul 07 11:18:13 2011 
     - Add compatibility about oracle and mysql;
     - Update documents and examples.
