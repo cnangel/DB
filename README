@@ -44,7 +44,7 @@ You can get help from the order:
 pod2text lib/DBQuery.pm
 perldoc lib/DBQuery.pm
 
-Copyright (C) 2009 by cnangel
+Copyright (C) 2009-2017 by cnangel
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.10.0 or,
